@@ -52,8 +52,8 @@ export class WysiwygE extends PolymerElement {
 		`;
 	}
 
-  static get template() {
-    return html`
+	static get template() {
+		return html`
 			<style include="iron-flex iron-flex-alignment iron-flex-factors iron-positioning">
 				:host {
 					display: block;
@@ -310,7 +310,8 @@ export class WysiwygE extends PolymerElement {
 			<iron-a11y-keys target="[[target]]" keys="[[modifier.key]]+z" on-keys-pressed="undo"></iron-a11y-keys>
 			<iron-a11y-keys target="[[target]]" keys="[[modifier.key]]+y" on-keys-pressed="redo"></iron-a11y-keys>
 			<iron-media-query query="(min-width: 768px)" query-matches="{{minWidth768px}}"></iron-media-query>
-			<div class="fit" id="layout" force-narrow$="[[forceNarrow]]">
+			<div class="vaadin-text-area-container" id="layout" force-narrow$="[[forceNarrow]]" required>
+					<label part="label" on-click="focus" id="vaadin-text-area-label-8">[[label]]</label>
 				<div id="toolbar" on-tap="updateTools">
 					<paper-button id="scrollPrevious" on-up="_onScrollButtonUp" on-down="_onScrollPrevious"	disabled="[[!canScrollPrevious]]">
 						<iron-icon icon="[[_scrollPreviousIcon(minWidth768px, forceNarrow)]]"></iron-icon>
@@ -336,10 +337,20 @@ export class WysiwygE extends PolymerElement {
 						<iron-icon icon="[[_scrollNextIcon(minWidth768px, forceNarrow)]]"></iron-icon>
 					</paper-button>
 				</div>
-				<div id="content">
-					${this._targetTemplate}
+			<div>
+				<div part="input-field" id="vaadin-text-area-input-8">
+					<div id="content">
+						${this._targetTemplate}
+					</div>
+				</div>
+				<div part="error-message"
+        			id="[[_errorId]]"
+        			aria-live="assertive"
+        			aria-hidden$="[[_getErrorMessageAriaHidden(invalid, errorMessage, _errorId)]]"
+      				>[[errorMessage]]</div>
 				</div>
 			</div>
+			<style include="lumo-text-area"></style>
     `;
 	}
 
@@ -819,7 +830,7 @@ export class WysiwygE extends PolymerElement {
 				this.restoreSelection();
 			}.bind(this);
 		}
-			
+
 		this.$.toolbar.addEventListener('restore-selection', this._restoreSelectionHandler);
 
 		if (!this._selectElementHandler) {
@@ -1088,7 +1099,7 @@ export class WysiwygE extends PolymerElement {
 
 				//Make sure tagName is allowed
 				if (node.parentNode && node.tagName && allowedTagNames.indexOf(node.tagName) === -1) {
-					node.outerHTML = node.innerHTML;
+					//node.outerHTML = node.innerHTML;
 					if (this.debug) console.log(node, 'invalid tagName');
 					sanitized = false;
 				}
